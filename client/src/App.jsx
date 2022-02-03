@@ -1,11 +1,11 @@
-import { MainForm, Transactions } from "./components";
+import { MainForm, Transactions, Footer } from "./components";
 const App = () => {
   return (
-    <div className="min-h-screen gradient-bg-welcome text-white">
-      <h1 className="text-3xl font-bold underline">CEND</h1>
-      <MainForm/>
-      <Transactions />
-    </div>
+      <div className="flex flex-col sm:h-screen justify-between bg-black text-white">
+        <MainForm />
+        <Transactions className="mb-auto" />
+        <Footer />
+      </div>
   );
 };
 
