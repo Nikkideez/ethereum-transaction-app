@@ -26,20 +26,38 @@ const getEthereumContract = () => {
 export const TransactionProvider = ({ children }) => {
   // Loading state while transaction is happening
   const [isLoading, setIsLoading] = useState(false);
+  // Hold the transactions
+  const [allTransactions, setAllTransactions] = useState();
   // Hold the number transaction count
-  const [transactionCount, setTransactionCount] = useState(localStorage.getItem('transactionCount'));
+  const [transactionCount, setTransactionCount] = useState(
+    localStorage.getItem("transactionCount")
+  );
   // State to hold the connected account from metamask
   const [currentAccount, setCurrentAccount] = useState("");
   // State to hold fields in the form
   const [formData, setFormData] = useState({
     addressTo: "",
     amount: "",
-    keyword: "",
+    // keyword: "",
     message: "",
   });
   // Handler to set the data
   const handleChange = (e, name) => {
     setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
+  };
+
+  // Get all the transactions
+  const getAllTransactions = async () => {
+    try {
+      if (!ethereum) return alert("Please install metamask");
+      const transactionContract = getEthereumContract();
+      const availableTransactions =
+        await transactionContract.getAllTransactions();
+      console.log(availableTransactions);
+      setAllTransactions(availableTransactions);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // Checking to make sure wallet is connected on page load
@@ -51,11 +69,26 @@ export const TransactionProvider = ({ children }) => {
         // set the current account
         setCurrentAccount(accounts[0]);
         // Get all Transactions
+        getAllTransactions();
       } else {
         console.log("no accounts found");
       }
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  // Checking if transactions have been made
+  const checkIfTransactionsExist = async () => {
+    try {
+      const transactionContract = getEthereumContract();
+      const transactionCount = await transactionContract.getTransactionCount();
+
+      window.localStorage.setItem("transactionCount", transactionCount);
+    } catch (error) {
+      console.log(error);
+
+      throw new Error("No ethereum object.");
     }
   };
 
@@ -81,25 +114,30 @@ export const TransactionProvider = ({ children }) => {
       if (!ethereum) return alert("Please install metamask");
 
       // Get data from the form
-      const { addressTo, amount, keyword, message } = formData;
+      const { addressTo, amount, message } = formData;
       // Getting the smart contract
       const transactionContract = getEthereumContract();
       // Request to send money
-      const parsedAmount = ethers.utils.parseEther(amount)
+      const parsedAmount = ethers.utils.parseEther(amount);
       await ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [{
-          from: currentAccount,
-          to: addressTo,
-          gas: '0x5208', // 21000 GWEI
-          value: parsedAmount._hex, //0.00001
-        }]
-      })
+        method: "eth_sendTransaction",
+        params: [
+          {
+            from: currentAccount,
+            to: addressTo,
+            gas: "0x5208", // 21000 GWEI
+            value: parsedAmount._hex, //0.00001
+          },
+        ],
+      });
       // Adding transaction to blockchain
       // transactionHash will also return a unique ID for the transaction
-      console.log(addressTo, parsedAmount, message, keyword);
-      console.log(transactionContract);
-      const transactionHash = await transactionContract.addToBlockchain(addressTo, parsedAmount, message, keyword);
+      const transactionHash = await transactionContract.addToBlockchain(
+        addressTo,
+        parsedAmount,
+        message
+        // keyword
+      );
       setIsLoading(true);
       console.log(`Loading - ${transactionHash.hash}`);
       await transactionHash.wait();
@@ -112,10 +150,12 @@ export const TransactionProvider = ({ children }) => {
       console.log(error);
     }
   };
-  // Calling the check
+
+  // Calling checks for wallet and transactions
   useEffect(() => {
     checkIfWalletIsConnected();
-  });
+    checkIfTransactionsExist();
+  }, [transactionCount]);
 
   return (
     <TransactionContext.Provider
@@ -126,6 +166,8 @@ export const TransactionProvider = ({ children }) => {
         setFormData,
         handleChange,
         sendTransaction,
+        allTransactions,
+        isLoading,
       }}
     >
       {children}

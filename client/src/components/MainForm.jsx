@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { SiEthereum } from "react-icons/si";
 import { Loader } from ".";
 import { TransactionContext } from "../context/TransactionContext";
+import { shortenAddress } from "../utils/shortenAddress";
 
 /* READ FIRST!!
 - Color Pallette theme could be #f68741, #fcdf87, #ef0195, #1b96f3, #10133a (Neon Theme)
@@ -30,18 +31,18 @@ const MainForm = () => {
     connectWallet,
     currentAccount,
     formData,
-    setFormData,
+    // setFormData,
     handleChange,
     sendTransaction,
   } = useContext(TransactionContext);
 
   const handleSubmit = (e) => {
-    const { addressTo, amount, keyword, message } = formData;
+    const { addressTo, amount, message } = formData;
 
     // When a form is submitted, page reloads. This prevents that from happening.
     e.preventDefault();
     // Check to make sure there are no missing fields
-    if (!addressTo || !amount || !keyword || !message) return;
+    if (!addressTo || !amount || !message) return;
     // Function to send the transaction
     sendTransaction();
   };
@@ -62,7 +63,11 @@ const MainForm = () => {
               <div>
                 <p className="text-white font-light text-sm">Address</p>
                 <p className="text-white font-semibold text-lg mt-1">
-                  0xasdasd....asdasd
+                  {currentAccount ? (
+                    shortenAddress(currentAccount)
+                  ) : (
+                    <span>NO WALLET DETECTED</span>
+                  )}
                 </p>
               </div>
             </div>
@@ -89,12 +94,12 @@ const MainForm = () => {
               type="number"
               handleChange={handleChange}
             />
-            <Input
+            {/* <Input
               placeholder="Keyword"
               name="keyword"
               type="text"
               handleChange={handleChange}
-            />
+            /> */}
             <Input
               placeholder="Message"
               name="message"
@@ -109,7 +114,7 @@ const MainForm = () => {
                 type="button"
                 onClick={handleSubmit}
                 className="text-white w-full mt-2 p-2 rounded-full cursor-pointer border-solid border-2 border-green-2 hover:border-blue disabled:border-grey disabled:text-grey disabled:cursor-default"
-                disabled={true}
+                disabled={!currentAccount}
               >
                 Send Now
               </button>
