@@ -1,11 +1,27 @@
-import { MainForm, Transactions, Footer } from "./components";
+import {
+  MainForm,
+  Transactions,
+  ViewTransactions,
+  ViewAbout,
+  About,
+  Footer,
+} from "./components";
 const App = () => {
   return (
-      <div className="flex flex-col sm:h-screen justify-between bg-black text-white">
+    <div className="bg-black text-white">
+      <div className="flex flex-col h-screen justify-evenly">
         <MainForm />
-        <Transactions className="mb-auto" />
+        <div>
+          <ViewTransactions />
+          <ViewAbout />
+        </div>
+      </div>
+      <div className="p-1">
+        <Transactions />
+        <About/>
         <Footer />
       </div>
+    </div>
   );
 };
 

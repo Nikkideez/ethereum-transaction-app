@@ -43,6 +43,7 @@ export const TransactionProvider = ({ children }) => {
   });
   // Handler to set the data
   const handleChange = (e, name) => {
+    console.log(e.target.value)
     setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
   };
 
