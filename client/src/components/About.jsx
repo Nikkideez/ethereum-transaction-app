@@ -18,7 +18,9 @@ const About = () => {
           on how to develop a blockchain application was referenced to
           understand the core fundamentals for building a smart contract. The
           Ropsten Test Network is used to host the smart contract, and therefore
-          requires Ethereum from the Ropsten Test Network.
+          requires Ethereum from the Ropsten Test Network. To view the
+          transaction log, a Metamask account must be connected to the
+          application.
         </p>
       </div>
     </section>

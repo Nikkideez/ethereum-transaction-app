@@ -43,14 +43,14 @@ export const TransactionProvider = ({ children }) => {
   });
   // Handler to set the data
   const handleChange = (e, name) => {
-    console.log(e.target.value)
+    // console.log(e.target.value)
     setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
   };
 
   // Get all the transactions
   const getAllTransactions = async () => {
     try {
-      if (!ethereum) return alert("Please install metamask");
+      if (!ethereum) return;
       const transactionContract = getEthereumContract();
       const availableTransactions =
         await transactionContract.getAllTransactions();
@@ -157,6 +157,11 @@ export const TransactionProvider = ({ children }) => {
     checkIfWalletIsConnected();
     checkIfTransactionsExist();
   }, [transactionCount]);
+
+  // Get transactions when account is detected
+  useEffect(() => {
+    getAllTransactions()
+  }, [currentAccount])
 
   return (
     <TransactionContext.Provider

@@ -9,7 +9,7 @@ const Transactions = () => {
   const handleAllTransactions = () =>
     setNumberTransactions(allTransactions.length);
   const handleHideTransactions = () => setNumberTransactions(5);
-  allTransactions && console.log(allTransactions.length);
+  // allTransactions && console.log(allTransactions.length);
   // let numberTransactions = 2;
 
   return (
